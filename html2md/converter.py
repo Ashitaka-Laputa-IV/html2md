@@ -86,7 +86,7 @@ class HTML2MarkdownConverter:
         elif self.table_converter.can_convert(tag_name):
             return self.table_converter.convert(element)
         elif self.base_converter.can_convert(tag_name):
-            return self.base_converter.convert(element, self._process_children)
+            return self.base_converter.convert(element, self._process_element)
         
         return self._process_children(element)
     
