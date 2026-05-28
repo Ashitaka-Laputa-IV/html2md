@@ -36,7 +36,7 @@ class HTML2MarkdownConverter:
         self.block_elements = {
             'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'section',
             'article', 'header', 'footer', 'main', 'aside', 'nav',
-            'ul', 'ol', 'li', 'blockquote', 'pre', 'table', 'hr'
+            'ul', 'ol', 'blockquote', 'pre', 'table', 'hr'
         }
     
     def convert(self, html_string: str) -> str:
@@ -86,114 +86,9 @@ class HTML2MarkdownConverter:
         elif self.table_converter.can_convert(tag_name):
             return self.table_converter.convert(element)
         elif self.base_converter.can_convert(tag_name):
-            if tag_name in self.block_elements:
-                return self._convert_block_element(element)
-            else:
-                return self._convert_inline_element(element)
+            return self.base_converter.convert(element, self._process_children)
         
         return self._process_children(element)
-    
-    def _convert_block_element(self, element: Tag) -> str:
-        """转换块级HTML元素。
-        
-        Args:
-            element: 要转换的块元素。
-        
-        Returns:
-            块元素的Markdown表示。
-        """
-        tag_name = element.name.lower()
-        
-        if tag_name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-            level = int(tag_name[1])
-            text = self._process_children(element)
-            return f"{'#' * level} {text}\n\n"
-        elif tag_name == 'p':
-            text = self._process_children(element)
-            return f"{text}\n\n" if text else ''
-        elif tag_name == 'blockquote':
-            text = self._process_children(element)
-            lines = text.split('\n')
-            quoted_lines = [f"> {line}" for line in lines if line.strip()]
-            return '\n'.join(quoted_lines) + '\n\n'
-        elif tag_name == 'hr':
-            return "---\n\n"
-        elif tag_name in ['ul', 'ol']:
-            return self._convert_list(element)
-        elif tag_name == 'li':
-            return self._convert_list_item(element)
-        else:
-            return self._process_children(element)
-    
-    def _convert_inline_element(self, element: Tag) -> str:
-        """转换内联HTML元素。
-        
-        Args:
-            element: 要转换的内联元素。
-        
-        Returns:
-            内联元素的Markdown表示。
-        """
-        tag_name = element.name.lower()
-        
-        if tag_name in ['strong', 'b']:
-            text = self._process_children(element)
-            return f"**{text}**"
-        elif tag_name in ['em', 'i']:
-            text = self._process_children(element)
-            return f"*{text}*"
-        elif tag_name == 'a':
-            text = self._process_children(element)
-            href = element.get('href', '')
-            title = element.get('title', '')
-            if title:
-                return f'[{text}]({href} "{title}")'
-            return f"[{text}]({href})"
-        elif tag_name == 'img':
-            alt = element.get('alt', '')
-            src = element.get('src', '')
-            title = element.get('title', '')
-            if title:
-                return f'![{alt}]({src} "{title}")'
-            return f"![{alt}]({src})"
-        elif tag_name == 'br':
-            return "  \n"
-        else:
-            return self._process_children(element)
-    
-    def _convert_list(self, element: Tag) -> str:
-        """将HTML列表转换为Markdown。
-        
-        Args:
-            element: 要转换的列表元素。
-        
-        Returns:
-            列表的Markdown表示。
-        """
-        tag_name = element.name.lower()
-        items = element.find_all('li', recursive=False)
-        
-        result = []
-        for index, li in enumerate(items, 1):
-            text = self._process_children(li)
-            if tag_name == 'ul':
-                result.append(f"- {text}")
-            else:
-                result.append(f"{index}. {text}")
-        
-        return '\n'.join(result) + '\n\n'
-    
-    def _convert_list_item(self, element: Tag) -> str:
-        """将HTML列表项转换为Markdown。
-        
-        Args:
-            element: 要转换的列表项元素。
-        
-        Returns:
-            列表项的Markdown表示。
-        """
-        text = self._process_children(element)
-        return f"- {text}"
     
     def _process_children(self, element) -> str:
         """处理元素的所有子元素。
