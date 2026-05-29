@@ -1,6 +1,6 @@
-"""Unit tests for TableConverter.
+"""TableConverter的单元测试。
 
-This module tests the conversion of HTML table elements to Markdown.
+本模块测试HTML表格元素到Markdown的转换。
 """
 
 import pytest
@@ -9,15 +9,15 @@ from html2md.converters.table import TableConverter
 
 
 class TestTableConverter:
-    """Test cases for TableConverter class."""
+    """TableConverter类的测试用例。"""
     
     @pytest.fixture
     def converter(self):
-        """Create a TableConverter instance for testing."""
+        """创建TableConverter实例用于测试。"""
         return TableConverter()
     
     def test_convert_simple_table(self, converter):
-        """Test conversion of a simple table."""
+        """测试简单表格的转换。"""
         html = '''
         <table>
             <tr>
@@ -38,7 +38,7 @@ class TestTableConverter:
         assert '| Cell 1 | Cell 2 |' in result
     
     def test_convert_table_no_header(self, converter):
-        """Test conversion of a table without header row."""
+        """测试无表头行的表格的转换。"""
         html = '''
         <table>
             <tr>
@@ -58,7 +58,7 @@ class TestTableConverter:
         assert '| Cell 3 | Cell 4 |' in result
     
     def test_convert_table_with_thead_tbody(self, converter):
-        """Test conversion of a table with thead and tbody."""
+        """测试带thead和tbody的表格的转换。"""
         html = '''
         <table>
             <thead>
@@ -83,7 +83,7 @@ class TestTableConverter:
         assert '| Alice | 30 |' in result
     
     def test_convert_table_multiple_columns(self, converter):
-        """Test conversion of a table with multiple columns."""
+        """测试多列表格的转换。"""
         html = '''
         <table>
             <tr>
@@ -108,7 +108,7 @@ class TestTableConverter:
         assert '| A | B | C | D |' in result
     
     def test_convert_empty_table(self, converter):
-        """Test conversion of an empty table."""
+        """测试空表格的转换。"""
         html = '<table></table>'
         tag = BeautifulSoup(html, 'lxml').find('table')
         result = converter.convert(tag)
@@ -116,7 +116,7 @@ class TestTableConverter:
         assert result == ""
     
     def test_convert_table_empty_row(self, converter):
-        """Test conversion of a table with empty row."""
+        """测试带空行的表格的转换。"""
         html = '''
         <table>
             <tr></tr>
@@ -131,12 +131,12 @@ class TestTableConverter:
         assert '| Data |' in result
     
     def test_can_convert_table(self, converter):
-        """Test can_convert method for table tag."""
+        """测试can_convert方法对table标签的处理。"""
         assert converter.can_convert('table') is True
         assert converter.can_convert('TABLE') is True
     
     def test_can_convert_table_elements(self, converter):
-        """Test can_convert method for table element tags."""
+        """测试can_convert方法对表格元素标签的处理。"""
         assert converter.can_convert('thead') is True
         assert converter.can_convert('tbody') is True
         assert converter.can_convert('tr') is True
@@ -144,13 +144,13 @@ class TestTableConverter:
         assert converter.can_convert('td') is True
     
     def test_can_convert_non_table_tag(self, converter):
-        """Test can_convert method for non-table tags."""
+        """测试can_convert方法对非表格标签的处理。"""
         assert converter.can_convert('div') is False
         assert converter.can_convert('span') is False
         assert converter.can_convert('p') is False
     
     def test_create_separator(self, converter):
-        """Test separator creation."""
+        """测试分隔符的创建。"""
         separator = converter._create_separator(3)
         assert separator == '| --- | --- | --- |'
         
@@ -158,7 +158,7 @@ class TestTableConverter:
         assert separator == '| --- | --- | --- | --- | --- |'
     
     def test_get_cell_text(self, converter):
-        """Test getting text from table cell."""
+        """测试从表格单元格获取文本。"""
         html = '<td>Cell Content</td>'
         cell = BeautifulSoup(html, 'lxml').find('td')
         text = converter._get_cell_text(cell)
@@ -166,7 +166,7 @@ class TestTableConverter:
         assert text == 'Cell Content'
     
     def test_get_cell_text_with_whitespace(self, converter):
-        """Test getting text from cell with extra whitespace."""
+        """测试从带额外空白的单元格获取文本。"""
         html = '<td>  Content with spaces  </td>'
         cell = BeautifulSoup(html, 'lxml').find('td')
         text = converter._get_cell_text(cell)

@@ -1,6 +1,6 @@
-"""Integration tests for HTML2MarkdownConverter.
+"""HTML2MarkdownConverter的集成测试。
 
-This module tests the complete conversion workflow from HTML to Markdown.
+本模块测试从HTML到Markdown的完整转换流程。
 """
 
 import pytest
@@ -8,15 +8,15 @@ from html2md import HTML2MarkdownConverter
 
 
 class TestHTML2MarkdownConverter:
-    """Integration test cases for HTML2MarkdownConverter class."""
+    """HTML2MarkdownConverter类的集成测试用例。"""
     
     @pytest.fixture
     def converter(self):
-        """Create a HTML2MarkdownConverter instance for testing."""
+        """创建HTML2MarkdownConverter实例用于测试。"""
         return HTML2MarkdownConverter()
     
     def test_convert_simple_document(self, converter):
-        """Test conversion of a simple HTML document."""
+        """测试简单HTML文档的转换。"""
         html = '''
         <h1>Title</h1>
         <p>This is a <strong>bold</strong> paragraph.</p>
@@ -27,7 +27,7 @@ class TestHTML2MarkdownConverter:
         assert 'This is a **bold** paragraph.' in result
     
     def test_convert_complex_document(self, converter):
-        """Test conversion of a complex HTML document."""
+        """测试复杂HTML文档的转换。"""
         html = '''
         <h1>Main Title</h1>
         <h2>Subtitle</h2>
@@ -49,7 +49,7 @@ class TestHTML2MarkdownConverter:
         assert '- Item 2' in result
     
     def test_convert_document_with_table(self, converter):
-        """Test conversion of HTML document with table."""
+        """测试带表格的HTML文档的转换。"""
         html = '''
         <h1>Data Table</h1>
         <table>
@@ -71,7 +71,7 @@ class TestHTML2MarkdownConverter:
         assert '| Alice | 30 |' in result
     
     def test_convert_document_with_code(self, converter):
-        """Test conversion of HTML document with code blocks."""
+        """测试带代码块的HTML文档的转换。"""
         html = '''
         <h1>Code Example</h1>
         <pre><code class="language-python">def hello():
@@ -86,7 +86,7 @@ class TestHTML2MarkdownConverter:
         assert '`code`' in result
     
     def test_convert_document_with_images(self, converter):
-        """Test conversion of HTML document with images."""
+        """测试带图片的HTML文档的转换。"""
         html = '''
         <h1>Images</h1>
         <img src="image.png" alt="An image">
@@ -99,7 +99,7 @@ class TestHTML2MarkdownConverter:
         assert '![Photo](photo.jpg "A photo")' in result
     
     def test_convert_document_with_lists(self, converter):
-        """Test conversion of HTML document with lists."""
+        """测试带列表的HTML文档的转换。"""
         html = '''
         <h1>Lists</h1>
         <h2>Unordered List</h2>
@@ -126,7 +126,7 @@ class TestHTML2MarkdownConverter:
         assert '2. Step 2' in result
     
     def test_convert_document_with_blockquote(self, converter):
-        """Test conversion of HTML document with blockquote."""
+        """测试带引用的HTML文档的转换。"""
         html = '''
         <h1>Quote</h1>
         <blockquote>This is a quote from someone important.</blockquote>
@@ -137,22 +137,22 @@ class TestHTML2MarkdownConverter:
         assert '> This is a quote from someone important.' in result
     
     def test_convert_empty_html(self, converter):
-        """Test conversion of empty HTML string."""
+        """测试空HTML字符串的转换。"""
         with pytest.raises(ValueError, match="HTML字符串不能为空或None"):
             converter.convert('')
     
     def test_convert_none_html(self, converter):
-        """Test conversion of None HTML string."""
+        """测试None HTML字符串的转换。"""
         with pytest.raises(ValueError, match="HTML字符串不能为空或None"):
             converter.convert(None)
     
     def test_convert_whitespace_only_html(self, converter):
-        """Test conversion of whitespace-only HTML string."""
+        """测试仅包含空白字符的HTML字符串的转换。"""
         with pytest.raises(ValueError, match="HTML字符串不能为空或None"):
             converter.convert('   \n\t  ')
     
     def test_convert_mixed_content(self, converter):
-        """Test conversion of HTML with mixed content."""
+        """测试混合内容HTML的转换。"""
         html = '''
         <h1>Article</h1>
         <p>First paragraph with <strong>bold</strong> text.</p>
@@ -173,7 +173,7 @@ class TestHTML2MarkdownConverter:
         assert 'Last paragraph.' in result
     
     def test_convert_nested_elements(self, converter):
-        """Test conversion of nested HTML elements."""
+        """测试嵌套HTML元素的转换。"""
         html = '''
         <p>This has <strong>bold and <em>italic</em> text</strong> inside.</p>
         '''
@@ -182,7 +182,7 @@ class TestHTML2MarkdownConverter:
         assert '**bold and *italic* text**' in result or 'bold' in result
     
     def test_convert_real_world_html(self, converter):
-        """Test conversion of a real-world HTML snippet."""
+        """测试真实世界HTML片段的转换。"""
         html = '''
         <!DOCTYPE html>
         <html>
