@@ -32,7 +32,3 @@ print(markdown)  # 输出: # Hello World
 pip install -e .[dev]
 pytest
 ```
-
-## 许可证
-
-MIT License
