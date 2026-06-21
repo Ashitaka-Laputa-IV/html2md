@@ -3,7 +3,6 @@
 本模块提供协调HTML到Markdown转换过程的主转换器类。
 """
 
-from typing import Optional, List
 from bs4 import BeautifulSoup, Tag, NavigableString
 
 from html2md.parser import HTMLParser
@@ -33,11 +32,6 @@ class HTML2MarkdownConverter:
         self.table_converter = TableConverter()
         self.code_converter = CodeConverter()
         
-        self.block_elements = {
-            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'section',
-            'article', 'header', 'footer', 'main', 'aside', 'nav',
-            'ul', 'ol', 'blockquote', 'pre', 'table', 'hr'
-        }
     
     def convert(self, html_string: str) -> str:
         """将HTML字符串转换为Markdown。

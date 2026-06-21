@@ -53,3 +53,5 @@ env/
 *.swp
 *.swo
 *~
+.claude/
+.reasonix/

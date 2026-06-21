@@ -1,14 +1,12 @@
-"""测试嵌套列表的实际输出。"""
+"""HTML2MarkdownConverter嵌套列表的单元测试。"""
 
-from html2md.converter import HTML2MarkdownConverter
+from html2md import HTML2MarkdownConverter
 
 
-def test_nested_lists():
-    """测试各种嵌套列表。"""
+def test_nested_ul():
+    """测试嵌套无序列表的转换。"""
     converter = HTML2MarkdownConverter()
-    
-    # 测试1: 嵌套无序列表
-    html1 = """
+    html = """
     <ul>
         <li>Item 1
             <ul>
@@ -19,19 +17,17 @@ def test_nested_lists():
         <li>Item 2</li>
     </ul>
     """
-    result1 = converter.convert(html1)
-    print("测试1: 嵌套无序列表")
-    print("期望输出:")
-    print("- Item 1")
-    print("  - Nested Item 1")
-    print("  - Nested Item 2")
-    print("- Item 2")
-    print("\n实际输出:")
-    print(result1)
-    print("="*50 + "\n")
-    
-    # 测试2: 嵌套有序列表
-    html2 = """
+    result = converter.convert(html)
+    assert '- Item 1' in result
+    assert '  - Nested Item 1' in result
+    assert '  - Nested Item 2' in result
+    assert '- Item 2' in result
+
+
+def test_nested_ol():
+    """测试嵌套有序列表的转换。"""
+    converter = HTML2MarkdownConverter()
+    html = """
     <ol>
         <li>Item 1
             <ol>
@@ -42,19 +38,17 @@ def test_nested_lists():
         <li>Item 2</li>
     </ol>
     """
-    result2 = converter.convert(html2)
-    print("测试2: 嵌套有序列表")
-    print("期望输出:")
-    print("1. Item 1")
-    print("  1. Nested Item 1")
-    print("  2. Nested Item 2")
-    print("2. Item 2")
-    print("\n实际输出:")
-    print(result2)
-    print("="*50 + "\n")
-    
-    # 测试3: 混合嵌套列表
-    html3 = """
+    result = converter.convert(html)
+    assert '1. Item 1' in result
+    assert '  1. Nested Item 1' in result
+    assert '  2. Nested Item 2' in result
+    assert '2. Item 2' in result
+
+
+def test_mixed_nested_list():
+    """测试混合嵌套列表（ul内嵌ol）的转换。"""
+    converter = HTML2MarkdownConverter()
+    html = """
     <ul>
         <li>Item 1
             <ol>
@@ -65,16 +59,16 @@ def test_nested_lists():
         <li>Item 2</li>
     </ul>
     """
-    result3 = converter.convert(html3)
-    print("测试3: 混合嵌套列表")
-    print("期望输出:")
-    print("- Item 1")
-    print("  1. Nested Ordered 1")
-    print("  2. Nested Ordered 2")
-    print("- Item 2")
-    print("\n实际输出:")
-    print(result3)
+    result = converter.convert(html)
+    assert '- Item 1' in result
+    assert '  1. Nested Ordered 1' in result
+    assert '  2. Nested Ordered 2' in result
+    assert '- Item 2' in result
 
 
+# 保留原手动运行入口
 if __name__ == "__main__":
-    test_nested_lists()
+    test_nested_ul()
+    test_nested_ol()
+    test_mixed_nested_list()
+    print("所有嵌套列表测试通过")

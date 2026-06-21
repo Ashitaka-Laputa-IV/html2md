@@ -34,6 +34,39 @@ class TableConverter:
             return self._convert_table(tag)
         return ""
     
+    def _get_rows(self, table: Tag):
+        """获取表格的所有行，避免穿透嵌套表格。
+        
+        Args:
+            table: 要获取行的表格元素。
+        
+        Returns:
+            行标签列表。
+        """
+        rows = []
+        # 直接子级的 tr
+        rows.extend(table.find_all('tr', recursive=False))
+        # thead/tbody 内的 tr
+        for section in table.find_all(['thead', 'tbody', 'tfoot'], recursive=False):
+            rows.extend(section.find_all('tr', recursive=False))
+        return rows
+
+    @staticmethod
+    def _get_column_count(cells) -> int:
+        """计算考虑colspan后的实际列数。
+        
+        Args:
+            cells: 单元格标签列表。
+        
+        Returns:
+            实际列数。
+        """
+        count = 0
+        for cell in cells:
+            colspan = int(cell.get('colspan', 1))
+            count += colspan
+        return count
+
     def _convert_table(self, table: Tag) -> str:
         """转换完整的表格元素。
         
@@ -43,7 +76,7 @@ class TableConverter:
         Returns:
             Markdown表格字符串。
         """
-        rows = table.find_all('tr')
+        rows = self._get_rows(table)
         if not rows:
             return ""
         
@@ -59,7 +92,8 @@ class TableConverter:
             result.append('| ' + ' | '.join(cell_texts) + ' |')
             
             if not header_processed and row.find('th'):
-                result.append(self._create_separator(len(cells)))
+                num_cols = self._get_column_count(cells)
+                result.append(self._create_separator(num_cols))
                 header_processed = True
         
         return '\n'.join(result) + '\n\n'

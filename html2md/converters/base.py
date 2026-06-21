@@ -72,6 +72,7 @@ class BaseConverter:
             Markdown标题。
         """
         level = int(tag.name[1])
+        level = max(1, min(level, 6))
         text = self._get_processed_content(tag, process_element_func)
         return f"{'#' * level} {text}\n\n"
     

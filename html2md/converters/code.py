@@ -21,6 +21,27 @@ class CodeConverter:
         """初始化代码转换器。"""
         self.supported_tags = {'pre', 'code', 'kbd'}
     
+    @staticmethod
+    def _max_consecutive_run(text: str, char: str) -> int:
+        """查找文本中字符的最长连续出现次数。
+        
+        Args:
+            text: 要搜索的文本。
+            char: 要搜索的字符。
+        
+        Returns:
+            最长连续运行长度。
+        """
+        max_run = 0
+        current_run = 0
+        for c in text:
+            if c == char:
+                current_run += 1
+                max_run = max(max_run, current_run)
+            else:
+                current_run = 0
+        return max_run
+
     def convert(self, tag: Tag) -> str:
         """将HTML代码元素转换为Markdown。
         
@@ -58,7 +79,12 @@ class CodeConverter:
             language = ''
             text = pre.get_text()
         
-        fence = "```" if "```" not in text else "~~~~"
+        max_backtick_run = self._max_consecutive_run(text, '`')
+        if max_backtick_run >= 3:
+            max_tilde_run = self._max_consecutive_run(text, '~')
+            fence = '~' * max(3, max_tilde_run + 1)
+        else:
+            fence = '```'
         return f"{fence}{language}\n{text}\n{fence}\n\n"
     
     def _convert_inline_code(self, code: Tag) -> str:
@@ -71,12 +97,13 @@ class CodeConverter:
             Markdown内联代码。
         """
         text = code.get_text()
-        num_backticks = max(c for c in (text.count('`'), text.count('``'))) + 1
+        max_run = self._max_consecutive_run(text, '`')
+        num_backticks = max_run + 1
         if num_backticks == 1:
             return f"`{text}`"
         else:
-            backticks = '`' * max(2, num_backticks)
-            spacer = ' ' if text.startswith('`') else ''
+            backticks = '`' * num_backticks
+            spacer = ' ' if text.startswith('`') or text.endswith('`') else ''
             return f"{backticks}{spacer}{text}{spacer}{backticks}"
 
     def _convert_code(self, code: Tag) -> str:

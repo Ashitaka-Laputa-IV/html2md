@@ -179,7 +179,7 @@ class TestHTML2MarkdownConverter:
         '''
         result = converter.convert(html)
         
-        assert '**bold and *italic* text**' in result or 'bold' in result
+        assert '**bold and *italic* text**' in result
     
     def test_convert_real_world_html(self, converter):
         """测试真实世界HTML片段的转换。"""

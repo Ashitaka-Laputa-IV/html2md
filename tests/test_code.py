@@ -141,3 +141,48 @@ class TestCodeConverter:
         language = converter._get_language(code)
         
         assert language == ''
+
+    # --- 反引号转义测试 ---
+
+    def test_convert_code_with_single_backtick(self, converter):
+        """测试内联代码中含单个反引号时的转义。"""
+        html = '<code>a ` b</code>'
+        tag = BeautifulSoup(html, 'lxml').find('code')
+        result = converter.convert(tag)
+        assert result == '``a ` b``'
+
+    def test_convert_code_with_double_backticks(self, converter):
+        """测试内联代码中含双反引号时的转义。"""
+        html = '<code>a `` b</code>'
+        tag = BeautifulSoup(html, 'lxml').find('code')
+        result = converter.convert(tag)
+        assert result == '```a `` b```'
+
+    def test_convert_code_with_triple_backticks(self, converter):
+        """测试内联代码中含三反引号时的转义。"""
+        html = '<code>a ``` b</code>'
+        tag = BeautifulSoup(html, 'lxml').find('code')
+        result = converter.convert(tag)
+        assert result == '````a ``` b````'
+
+    def test_convert_code_starting_with_backtick(self, converter):
+        """测试内联代码以反引号开头时使用空格分隔。"""
+        html = '<code>`code`</code>'
+        tag = BeautifulSoup(html, 'lxml').find('code')
+        result = converter.convert(tag)
+        assert result == '`` `code` ``'
+
+    def test_convert_code_ending_with_backtick(self, converter):
+        """测试内联代码以反引号结尾时使用空格分隔。"""
+        html = '<code>code`</code>'
+        tag = BeautifulSoup(html, 'lxml').find('code')
+        result = converter.convert(tag)
+        assert result == '`` code` ``'
+
+    def test_convert_pre_with_triple_backticks_in_code(self, converter):
+        """测试代码块中含三反引号时使用波浪线 fence。"""
+        html = '<pre><code>Use ``` like this</code></pre>'
+        tag = BeautifulSoup(html, 'lxml').find('pre')
+        result = converter.convert(tag)
+        assert '~~~' in result
+        assert 'Use ``` like this' in result
