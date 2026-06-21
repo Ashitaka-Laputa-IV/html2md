@@ -129,7 +129,9 @@ class BaseConverter:
         text = self._get_processed_content(tag, process_element_func)
         href = tag.get('href', '')
         title = tag.get('title', '')
-        
+
+        if not href:
+            return text
         if title:
             return f'[{text}]({href} "{title}")'
         return f"[{text}]({href})"
@@ -265,7 +267,10 @@ class BaseConverter:
         """
         text = self._get_processed_content(tag, process_element_func)
         lines = text.split('\n')
-        quoted_lines = [f"> {line}" for line in lines if line.strip()]
+        # 移除末尾空行，保留中间空行表示段落分隔
+        while lines and not lines[-1].strip():
+            lines.pop()
+        quoted_lines = [f"> {line}" if line.strip() else ">" for line in lines]
         return '\n'.join(quoted_lines) + '\n\n'
     
     def _get_processed_content(self, tag: Tag, process_element_func: Optional[Callable] = None) -> str:

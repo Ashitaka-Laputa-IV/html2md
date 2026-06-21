@@ -58,31 +58,32 @@ class CodeConverter:
             language = ''
             text = pre.get_text()
         
-        return f"```{language}\n{text}\n```\n\n"
+        fence = "```" if "```" not in text else "~~~~"
+        return f"{fence}{language}\n{text}\n{fence}\n\n"
     
-    def _convert_code(self, code: Tag) -> str:
-        """将code元素转换为内联代码。
-        
+    def _convert_inline_code(self, code: Tag) -> str:
+        """将code/kbd元素转换为内联代码，处理反引号冲突。
+
         Args:
-            code: 要转换的code元素。
-        
+            code: 要转换的code或kbd元素。
+
         Returns:
             Markdown内联代码。
         """
         text = code.get_text()
-        return f"`{text}`"
-    
+        num_backticks = max(c for c in (text.count('`'), text.count('``'))) + 1
+        if num_backticks == 1:
+            return f"`{text}`"
+        else:
+            backticks = '`' * max(2, num_backticks)
+            spacer = ' ' if text.startswith('`') else ''
+            return f"{backticks}{spacer}{text}{spacer}{backticks}"
+
+    def _convert_code(self, code: Tag) -> str:
+        return self._convert_inline_code(code)
+
     def _convert_kbd(self, kbd: Tag) -> str:
-        """将kbd元素转换为内联代码。
-        
-        Args:
-            kbd: 要转换的kbd元素。
-        
-        Returns:
-            Markdown内联代码。
-        """
-        text = kbd.get_text()
-        return f"`{text}`"
+        return self._convert_inline_code(kbd)
     
     def _get_language(self, code: Tag) -> str:
         """从code元素的类中提取编程语言。
